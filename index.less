@@ -1,8 +1,27 @@
-html, body{
+html, body {
   width: 100%;
   height: 100%;
 }
-body{
+body {
   margin: 0;
-  background: black;
+  background: #aaaaaa;
+  overflow: hidden;
+  #map-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    svg {
+      width: 100%;
+      height: 100%;
+      #map-group, #primitive-group {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  #map-container.collapse{
+    right: 200px;
+  }
 }

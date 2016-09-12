@@ -2,25 +2,26 @@ var webpack = require('webpack');
 var path = require('path');
 
 module.exports = {
+    devtool: 'source-map',
     entry: './index.js',
     output: {
-        filename: '[name].js',
-        path: './dist'
+        path: path.resolve(__dirname, "dist"),
+        publicPath: "/dist/",
+        filename: "bundle.js"
     },
     plugins: [
         new webpack.ProvidePlugin({
             '$': 'jquery',
             'jQuery': 'jquery'
-        }),
-        new webpack.optimize.CommonsChunkPlugin('common.js')
+        })
     ],
     resolve: {
-        extensions: ['', '.js', '.jsx']
+        extensions: ['', '.js']
     },
     module: {
         loaders: [{
             test: /\.(js)$/,
-            loaders: ['babel'],
+            loaders: ['babel-loader']
         },{
             test: /\.(less|css)$/,
             loader: "style!css!less"
@@ -30,5 +31,7 @@ module.exports = {
             include: [path.join(__dirname, 'static/images'), path.join(__dirname, 'src/less')]
         }]
     },
-    watch: true
+    devServer: {
+        //inline: true
+    }
 };

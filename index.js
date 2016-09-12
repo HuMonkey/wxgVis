@@ -2,11 +2,9 @@
  * Created by hzhuwanqi on 2016/9/9.
  */
 require('./index.less');
-let d3 = require('d3');
+import d3 from 'd3';
+import WorldMap from './src/scripts/worldmap.js';
 
-let temp = $('body');
-console.log(temp);
-
-
-let temp2 = d3.select('body');
-console.log(temp2);
+d3.json('/static/data/data.txt', (array) => {
+    var worldMap = new WorldMap(array);
+});

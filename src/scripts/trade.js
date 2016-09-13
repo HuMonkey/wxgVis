@@ -89,28 +89,6 @@ class Trade {
             }, 5 * (40 - i));
         }
 
-        // circle with transition
-        //const primitive = svg.append('circle')
-        //    .attr('cx', src[0])
-        //    .attr('cy', src[1])
-        //    .attr('r', 6)
-        //    .attr('opacity', 0.8)
-        //    .attr('fill', 'white')
-        //    .attr('stroke', 'black');
-        //primitive
-        //    .transition()
-        //    .duration(3000)
-        //    .attr('cx', dest[0])
-        //    .attr('cy', dest[1]);
-        //
-        //setTimeout(() => {
-        //    primitive.transition()
-        //        .duration(3000)
-        //        .attr('opacity', 0);
-        //}, 4000);
-
-
-
     }
 }
 

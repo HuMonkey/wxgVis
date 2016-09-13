@@ -24,7 +24,7 @@ class WorldMap {
         const trades = this.trades;
         let { width, height } = d3.select('svg').node().getBoundingClientRect();
         let projection = d3.geo.mercator()
-            .center([107, 37])
+            .center([107, 38])
             .scale(1000)
             .translate([width / 2, height / 2]);
         let path = d3.geo.path()

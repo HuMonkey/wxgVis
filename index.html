@@ -2,14 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>贸易</title>
 </head>
 <body>
-    <div id="map-container">
+    <div id="map-container" class="collapse">
         <svg>
             <g id="map-group"></g>
             <g id="primitive-group"></g>
         </svg>
+    </div>
+    <div id="vis-container">
+        <!--<div id="search">-->
+            <!--<div class="time-range row">-->
+                <!--<span class="label">时间范围</span>-->
+                <!--<input type="datetime" name="start"/>-->
+                <!--至-->
+                <!--<input type="datetime" name="end"/>-->
+            <!--</div>-->
+            <!--<div class="city row">-->
+                <!--<span class="label">城市</span>-->
+                <!--<input type="text" name="city"/>-->
+            <!--</div>-->
+            <!--<div class="type row">-->
+                <!--<span class="label">商品类型</span>-->
+                <!--<input type="text" name="type"/>-->
+            <!--</div>-->
+            <!--<div class="btn">搜索</div>-->
+        <!--</div>-->
+        <div class="barchart"></div>
+        <div class="types">
+            <div class="item">
+                <input type="checkbox"/> 测试1
+            </div>
+            <div class="item">
+                <input type="checkbox"/> 测试2
+            </div>
+        </div>
+        <div class="timeline">
+            <svg></svg>
+        </div>
+        <div class="news"></div>
     </div>
 </body>
 <script src="./dist/bundle.js"></script>

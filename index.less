@@ -27,6 +27,101 @@ body {
     }
   }
   #map-container.collapse{
-    right: 200px;
+    right: 600px;
+  }
+  #vis-container {
+    position: absolute;
+    width: 600px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    #search {
+      width: 100%;
+      height: auto;
+      .row{
+        color: #333333;
+        width: 100%;
+        height: 40px;
+        span.label {
+          display: inline-block;
+          width: 20%;
+          text-align: right;
+          padding: 0 10px;
+          height: 100%;
+          line-height: 40px;
+        }
+      }
+      .btn {
+        margin: 20px auto;
+        width: 560px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 400;
+        white-space: nowrap;
+        border: 1px solid #cccccc;
+        color: #333333;
+        background-color: #ffffff;
+        cursor: pointer;
+        border-radius: 3px;
+      }
+      .btn:hover {
+        background-color: #dddddd;
+      }
+      .btn:active {
+        background-color: #cccccc;
+      }
+    }
+    .barchart {
+      width: 100%;
+      height: 400px;
+      background: black;
+    }
+    .types {
+      width: 100%;
+      padding: 10px 10px;
+      .item{
+        height: 40px;
+        line-height: 40px;
+        margin: 0 20px;
+        display: inline-block;
+      }
+    }
+    .timeline{
+      width: 100%;
+      height: 100px;
+      svg{
+        width: 100%;
+        height: 100px;
+        .axis path,
+        .axis line {
+          fill: none;
+          stroke: #ffffff;
+        }
+
+        .x .axis .tick text{
+          transform: rotate(-45deg);
+        }
+
+        .tick text {
+          font-size: 12px;
+          stroke: #ffffff;
+        }
+        .tick line {
+          opacity: 0.3;
+        }
+        rect.extent {
+          fill: #ffffff;
+          opacity: 0.6;
+        }
+      }
+    }
+    .news{
+      position: absolute;
+      width: 100%;
+      height: 400px;
+      background: yellow;
+    }
   }
 }

@@ -12,20 +12,26 @@ const COUNTRY_FILL_HIGHLIGHT = '#ffffff';
 const COUNTRY_STROKE = '#ffffff';
 const SPOT_FILL = '';
 const SPOT_STROKE = '';
-const svg = d3.select('#map-group');
 
 class WorldMap {
     constructor(trades) {
         this.trades = trades;
+        this.destroy = this.destroy.bind(this);
+        this.render = this.render.bind(this);
         this.render();
+    }
+
+    destroy() {
+        $('#map-container svg').html('<g id="map-group"></g> <g id="primitive-group"></g>');
     }
 
     render() {
         const trades = this.trades;
-        let { width, height } = d3.select('svg').node().getBoundingClientRect();
+        let { width, height } = d3.select('#map-container svg').node().getBoundingClientRect();
+        const svg = d3.select('#map-group');
         let projection = d3.geo.mercator()
             .center([107, 38])
-            .scale(1000)
+            .scale(height)
             .translate([width / 2, height / 2]);
         let path = d3.geo.path()
             .projection(projection);

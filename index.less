@@ -4,14 +4,35 @@ html, body {
 }
 body {
   margin: 0;
-  background: #aaaaaa;
   overflow: hidden;
+  .types {
+    position: absolute;
+    left: 0;
+    width: 200px;
+    top: 0;
+    z-index: 1;
+    padding: 10px 10px;
+    .item{
+      font-size: 10px;
+      height: 20px;
+      line-height: 20px;
+      margin: 5px 5px;
+      display: block;
+      span {
+        display: inline-block;
+        padding: 0 5px;
+        height: 20px;
+        line-height: 20px;
+      }
+    }
+  }
   #map-container {
     position: absolute;
+    background: #aaaaaa;
     left: 0;
     right: 0;
     top: 0;
-    bottom: 0;
+    bottom: 400px;
     svg {
       width: 100%;
       height: 100%;
@@ -29,99 +50,60 @@ body {
   #map-container.collapse{
     right: 600px;
   }
+  .barchart-container {
+    width: 100%;
+    height: 400px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    background: white;
+     svg {
+       height: 100%;
+       .axis {
+         font: 10px sans-serif;
+       }
+
+       .axis path,
+       .axis line {
+         fill: none;
+         stroke: #000;
+         shape-rendering: crispEdges;
+       }
+     }
+  }
   #vis-container {
     position: absolute;
     width: 600px;
     right: 0;
     top: 0;
-    bottom: 0;
-    #search {
+    bottom: 400px;
+    .matrix {
       width: 100%;
-      height: auto;
-      .row{
-        color: #333333;
-        width: 100%;
-        height: 40px;
-        span.label {
-          display: inline-block;
-          width: 20%;
-          text-align: right;
-          padding: 0 10px;
-          height: 100%;
-          line-height: 40px;
+      height: 100%;
+      svg {
+        height: 100%;
+        .axis {
+          font: 10px sans-serif;
         }
-      }
-      .btn {
-        margin: 20px auto;
-        width: 560px;
-        height: 30px;
-        line-height: 30px;
-        text-align: center;
-        font-size: 14px;
-        font-weight: 400;
-        white-space: nowrap;
-        border: 1px solid #cccccc;
-        color: #333333;
-        background-color: #ffffff;
-        cursor: pointer;
-        border-radius: 3px;
-      }
-      .btn:hover {
-        background-color: #dddddd;
-      }
-      .btn:active {
-        background-color: #cccccc;
-      }
-    }
-    .barchart {
-      width: 100%;
-      height: 400px;
-      background: black;
-    }
-    .types {
-      width: 100%;
-      padding: 10px 10px;
-      .item{
-        height: 40px;
-        line-height: 40px;
-        margin: 0 20px;
-        display: inline-block;
-      }
-    }
-    .timeline{
-      width: 100%;
-      height: 100px;
-      svg{
-        width: 100%;
-        height: 100px;
+
         .axis path,
         .axis line {
           fill: none;
-          stroke: #ffffff;
+          stroke-width: 0;
+          shape-rendering: crispEdges;
         }
-
-        .x .axis .tick text{
-          transform: rotate(-45deg);
-        }
-
-        .tick text {
-          font-size: 12px;
-          stroke: #ffffff;
-        }
-        .tick line {
-          opacity: 0.3;
-        }
-        rect.extent {
-          fill: #ffffff;
-          opacity: 0.6;
+        .x{
+          .tick{
+            text{
+              -webkit-transform:rotate(90deg);
+              text-anchor: start!important;
+            }
+          }
         }
       }
-    }
-    .news{
-      position: absolute;
-      width: 100%;
-      height: 400px;
-      background: yellow;
     }
   }
 }

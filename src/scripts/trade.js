@@ -32,6 +32,8 @@ class Trade {
             .attr('r', 40)
             .attr('opacity', 0);
 
+        const x2 = length === 0 ? 0 : src[0] + 20 / length * (dest[0] - src[0]);
+        const y2 = length === 0 ? 0 : src[1] + 20 / length * (dest[1] - src[1]);
         const meteor = svg.append('line')
             .attr('stroke', 'red')
             .attr('stroke-width', '4px')
@@ -39,12 +41,14 @@ class Trade {
             .attr('class', 'trade-line')
             .attr('x1', src[0])
             .attr('y1', src[1])
-            .attr('x2', src[0] + 20 / length * (dest[0] - src[0]))
-            .attr('y2', src[1] + 20 / length * (dest[1] - src[1]));
+            .attr('x2', x2)
+            .attr('y2', y2);
 
+        const x1 = length === 0 ? 0 : dest[0] - 0 / length * (dest[0] - src[0]);
+        const y1 = length === 0 ? 0 : dest[1] - 0 / length * (dest[1] - src[1]);
         meteor.transition()
-            .duration(2000).attr('x1', dest[0] - 0 / length * (dest[0] - src[0]))
-            .attr('y1', dest[1] - 0 / length * (dest[1] - src[1]))
+            .duration(2000).attr('x1', x1)
+            .attr('y1', y1)
             .attr('x2', dest[0])
             .attr('y2', dest[1])
             .each('end', () => {
@@ -63,6 +67,8 @@ class Trade {
             });
 
         const makeGhost = (index) => {
+            const x2 = length === 0 ? 0 : src[0] + 20 / length * (dest[0] - src[0]);
+            const y2 = length === 0 ? 0 : src[1] + 20 / length * (dest[1] - src[1]);
             const ghost = svg.append('line')
                 .attr('stroke', 'red')
                 .attr('stroke-width', '4px')
@@ -70,12 +76,14 @@ class Trade {
                 .attr('class', 'trade-line')
                 .attr('x1', src[0])
                 .attr('y1', src[1])
-                .attr('x2', src[0] + 20 / length * (dest[0] - src[0]))
-                .attr('y2', src[1] + 20 / length * (dest[1] - src[1]));
+                .attr('x2', x2)
+                .attr('y2', y2);
 
+            const x1 = length === 0 ? 0 : dest[0] - 0 / length * (dest[0] - src[0]);
+            const y1 = length === 0 ? 0 : dest[1] - 0 / length * (dest[1] - src[1]);
             ghost.transition()
-                .duration(2000).attr('x1', dest[0] - 0 / length * (dest[0] - src[0]))
-                .attr('y1', dest[1] - 0 / length * (dest[1] - src[1]))
+                .duration(2000).attr('x1', x1)
+                .attr('y1', y1)
                 .attr('x2', dest[0])
                 .attr('y2', dest[1])
                 .each('end', () => {

@@ -4,10 +4,14 @@
 import { groupByTime } from './util';
 import { colors } from './constant';
 
+let xScale, xScale1, yScale;
+let height;
+
 class Barchart {
     constructor(data, listener) {
         this.data = data;
         this.destroy = this.destroy.bind(this);
+        this.highlight = this.highlight.bind(this);
         this.render = this.render.bind(this);
         this.render();
     }
@@ -16,33 +20,86 @@ class Barchart {
         d3.select('.barchart-container svg').select('*').remove();
     }
 
+    highlight(filteredData) {
+        d3.selectAll('.barchart-container .group-highlight').remove();
+        const { data, types } = groupByTime(filteredData);
+        const svg = d3.select('.barchart-container svg > g');
+        const group = svg.selectAll(".group-highlight")
+            .data(data)
+            .enter().append("g")
+            .attr("class", "group-highlight")
+            .style("opacity", 0.8)
+            .attr("transform", function(d) { return "translate(" + xScale(d.time) + ",0)"; });
+
+        group.selectAll(".bar-highlight")
+            .data(function(d) { return d.types; })
+            .enter().append("rect")
+            .attr('class', 'bar-highlight')
+            .attr("width", xScale1.rangeBand())
+            .attr("x", function(d) { return xScale1(d.type); })
+            .attr("y", function(d) { return yScale(d.count); })
+            .attr("height", function(d) { return height - yScale(d.count); })
+            .style("fill", 'red')
+            .append('title').text(function(d) {
+            return d.type + ' ' + d.count;
+        });
+        group.selectAll(".bar-text-highlight")
+            .data(function(d) { return d.types; })
+            .enter().append("text")
+            .attr('class', 'bar-text-highlight')
+            .attr("x", (d) => xScale1(d.type) + 0.5 * xScale1.rangeBand())
+            .attr("y", (d) => yScale(d.count) - 5)
+            .text((d) => d.count)
+            .style("fill", 'black')
+            .style("text-anchor", 'middle')
+            .style('visibility', (d) => d.count === 0 ? 'hidden' : 'visible');
+        // d3.selectAll('.barchart-container .group text').style('visibility', 'hidden');
+    }
+
     render(){
         const container = $('.barchart-container');
         const canvas = container.find('svg');
         const { data, types } = groupByTime(this.data);
-        const margin = {top: 20, right: 30, bottom: 50, left: 60},
-            //width = container.width() - margin.left - margin.right,
-            width = data.length * types.length * 20,
-            height = container.height() - margin.top - margin.bottom;
-        const x0 = d3.scale.ordinal()
+        const margin = {top: 20, right: 30, bottom: 50, left: 60};
+        let width = data.length * types.length * 20;
+        if( width < container.width() ) {
+            width = container.width();
+        }
+        height = container.height() - margin.top - margin.bottom;
+        xScale = d3.scale.ordinal()
             .rangeRoundBands([0, width], .1);
-        const x1 = d3.scale.ordinal();
-        const y = d3.scale.linear()
+        xScale1 = d3.scale.ordinal();
+        yScale = d3.scale.linear()
             .range([height, height * 0.4, 0]);
         const xAxis = d3.svg.axis()
-            .scale(x0)
+            .scale(xScale)
             .orient("bottom");
         const yAxis = d3.svg.axis()
-            .scale(y)
+            .scale(yScale)
             .orient("left");
 
-        x0.domain(data.map(function(d) { return d.time; }));
-        x1.domain(types).rangeRoundBands([0, x0.rangeBand()]);
-        y.domain([0, 50, d3.max(data, function(d) { return d3.max(d.types, function(d) { return d.count; }); })]);
+        xScale.domain(data.map(function(d) { return d.time; }));
+        xScale1.domain(types).rangeRoundBands([0, xScale.rangeBand()]);
+        yScale.domain([0, 50, d3.max(data, function(d) { return d3.max(d.types, function(d) { return d.count; }); })]);
         const svg = d3.select('.barchart-container svg')
             .style('width', width + margin.left + margin.right)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        let brush = d3.svg.brush()
+            .x(xScale)
+            .on('brushend', brushend);
+        function brushend() {
+            let l = brush.extent()[0];
+            let r = brush.extent()[1];
+            console.log(l, r);
+        }
+        svg.append("g")
+            .attr('class', 'x brush')
+            .call(brush)
+            .selectAll('rect')
+            .attr('y', 0)
+            .attr('height', height);
 
         svg.append("g")
             .attr("class", "x axis")
@@ -63,45 +120,29 @@ class Barchart {
             .data(data)
             .enter().append("g")
             .attr("class", "group")
-            .attr("transform", function(d) { return "translate(" + x0(d.time) + ",0)"; });
+            .attr("transform", function(d) { return "translate(" + xScale(d.time) + ",0)"; });
 
-        group.selectAll("rect")
+        group.selectAll(".bar")
             .data(function(d) { return d.types; })
             .enter().append("rect")
-            .attr("width", x1.rangeBand())
-            .attr("x", function(d) { return x1(d.type); })
-            .attr("y", function(d) { return y(d.count); })
-            .attr("height", function(d) { return height - y(d.count); })
+            .attr('class', 'bar')
+            .attr("width", xScale1.rangeBand())
+            .attr("x", function(d) { return xScale1(d.type); })
+            .attr("y", function(d) { return yScale(d.count); })
+            .attr("height", function(d) { return height - yScale(d.count); })
             .style("fill", function(d) { return colors(d.type); }).append('title').text(function(d) {
                 return d.type + ' ' + d.count;
             });
-        group.selectAll("text")
+        group.selectAll(".bar-text")
             .data(function(d) { return d.types; })
             .enter().append("text")
-            .attr("x", (d) => x1(d.type) + 0.5 * x1.rangeBand())
-            .attr("y", (d) => y(d.count) - 5)
+            .attr('class', 'bar-text')
+            .attr("x", (d) => xScale1(d.type) + 0.5 * xScale1.rangeBand())
+            .attr("y", (d) => yScale(d.count) - 5)
             .text((d) => d.count)
             .style("fill", 'black')
-            .style("text-anchor", 'middle');
-
-        //var legend = svg.selectAll(".legend")
-        //    .data(types.slice().reverse())
-        //    .enter().append("g")
-        //    .attr("class", "legend")
-        //    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-        //
-        //legend.append("rect")
-        //    .attr("x", width - 18)
-        //    .attr("width", 18)
-        //    .attr("height", 18)
-        //    .style("fill", colors);
-        //
-        //legend.append("text")
-        //    .attr("x", width - 24)
-        //    .attr("y", 9)
-        //    .attr("dy", ".35em")
-        //    .style("text-anchor", "end")
-        //    .text(function(d) { return d; });
+            .style("text-anchor", 'middle')
+            .style('visibility', (d) => d.count === 0 ? 'hidden' : 'visible');
     }
 }
 

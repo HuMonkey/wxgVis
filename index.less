@@ -72,6 +72,15 @@ body {
          stroke: #000;
          shape-rendering: crispEdges;
        }
+       .group, .group-highlight{
+         text {
+           font-size: 10px;
+         }
+       }
+       rect.extent {
+         fill: #153b4d;
+         opacity: 0.3;
+       }
      }
   }
   #vis-container {
@@ -102,6 +111,9 @@ body {
               text-anchor: start!important;
             }
           }
+        }
+        rect.highlight {
+          stroke: black!important;
         }
       }
     }

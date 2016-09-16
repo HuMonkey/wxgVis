@@ -12,13 +12,17 @@ let data;
 let typeArray, timeArray;
 let worldMap, typePicker, barchart, pixelmap;
 
-function render(filteredDate) {
+function render(filteredData) {
     worldMap && worldMap.destroy();
     barchart && barchart.destroy();
     pixelmap && pixelmap.destroy();
-    worldMap = new WorldMap(filteredDate);
-    barchart = new Barchart(filteredDate);
-    pixelmap = new Pixelmap(filteredDate);
+    worldMap = new WorldMap(filteredData);
+    barchart = new Barchart(filteredData);
+    pixelmap = new Pixelmap(filteredData, { filterByCities });
+}
+
+function highlight(filteredData) {
+    barchart.highlight(filteredData);
 }
 
 function switchType(type) {
@@ -32,6 +36,13 @@ function switchType(type) {
         return typeArray.indexOf(d.item_type) > -1;
     });
     render(filteredData);
+}
+
+function filterByCities(src, dest) {
+    let filteredData = data.filter((d) => {
+        return typeArray.indexOf(d.item_type) > -1 && d.src_city === src && d.dst_city === dest;
+    });
+    highlight(filteredData);
 }
 
 d3.json('/static/data/data.txt', (array) => {

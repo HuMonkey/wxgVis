@@ -6,6 +6,7 @@ import { matrixByCities } from './util';
 class Pixelmap {
     constructor(data, listener) {
         this.data = data;
+        this.listener = listener;
         this.destroy = this.destroy.bind(this);
         this.render = this.render.bind(this);
         this.render();
@@ -17,7 +18,7 @@ class Pixelmap {
 
     render() {
         const { matrix, cities } = matrixByCities(this.data);
-        console.log(matrix);
+        const { filterByCities } = this.listener;
         let max = 0;
         matrix.forEach((x) => {
             x.forEach((y) => {
@@ -62,6 +63,7 @@ class Pixelmap {
             .data(matrix)
             .enter().append("g")
             .attr("class", "row")
+            .attr('data', (d, i) => cities[i])
             .attr("transform", (d, i) => "translate(0, " + y(cities[i]) + ")")
             .on('mouseover', function(d, i) {
                 d3.select('.y.axis .tick:nth-child(' + (i + 1) + ')').attr('fill', 'red');
@@ -73,24 +75,37 @@ class Pixelmap {
             .data((d) => d).enter()
             .append('rect')
             .attr("class", "relation")
+            .attr('data', (d, i) => cities[i])
             .attr('width', x.rangeBand())
             .attr('height', y.rangeBand())
             .attr('x', (d, i) => x(cities[i]) - x.rangeBand())
             .attr('y', 0)
             .attr('fill', (d) => colorScale(d))
-            .attr('stroke', 'width')
+            .attr('stroke', 'white')
             .attr('stroke-width', '1px')
             .on('mouseover', function(d, i) {
                 d3.select('.x.axis .tick:nth-child(' + (i + 1) + ') text').attr('fill', 'red');
+                d3.select(this).attr('stroke', 'black');
             })
             .on('mouseleave', function(d, i) {
                 d3.select('.x.axis .tick:nth-child(' + (i + 1) + ') text').attr('fill', 'black');
+                d3.select(this).attr('stroke', 'white');
             })
             .on('click', function(d, i){
-                // TODO
+                if(d3.select(this).classed('highlight')) {
+                    d3.select(this).classed('highlight', false);
+                    d3.selectAll('.barchart-container .group-highlight').remove();
+                    return false;
+                }
+                d3.selectAll('.relation').classed('highlight', false);
+                d3.select(this).classed('highlight', true);
+                const src = d3.select(this.parentNode).attr('data');
+                const dest = d3.select(this).attr('data');
+                filterByCities(src, dest);
+                return false;
             })
             .append('title')
-            .text((d) => d);
+            .text((d) => '交易量:' + d);
 
 
     }

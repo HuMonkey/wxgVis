@@ -38,6 +38,7 @@ export function groupByTime(data) {
             types.push(d.item_type);
         }
     });
+    times.sort();
     let results = times.map((t) => {
         return {
             time: t.split('-')[1],

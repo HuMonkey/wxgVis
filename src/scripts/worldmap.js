@@ -64,9 +64,6 @@ class WorldMap {
                     let primitives = [];
                     trades.sort((a, b) => a.t_when > b.t_when);
                     trades.forEach((trade, i) => {
-                        if(i > 0) {
-                            return false;
-                        }
                         const src_loc = [trade.src_longitude, trade.src_latitude];
                         const dest_loc = [trade.dst_longitude, trade.dst_latitude];
                         const src_coor = projection(src_loc);

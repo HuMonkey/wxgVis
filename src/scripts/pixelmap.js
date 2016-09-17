@@ -54,9 +54,9 @@ class Pixelmap {
             .attr("class", "y axis")
             .call(yAxis);
 
-        const colors = ['#ffffff', '#00ff00', '#ff0000'];
+        const colors = ['#f0f0f0', '#bdbdbd', '#636363'];
         var colorScale = d3.scale.linear()
-            .domain([0, 20, max])
+            .domain([0, 100, max])
             .range(colors);
 
         const group = svg.selectAll(".row")
@@ -95,10 +95,12 @@ class Pixelmap {
                 if(d3.select(this).classed('highlight')) {
                     d3.select(this).classed('highlight', false);
                     d3.selectAll('.barchart-container .group-highlight').remove();
+                    d3.select('.barchart-container .x.brush').style('pointer-events', 'all');
                     return false;
                 }
                 d3.selectAll('.relation').classed('highlight', false);
                 d3.select(this).classed('highlight', true);
+                d3.select('.barchart-container .x.brush').style('pointer-events', 'none');
                 const src = d3.select(this.parentNode).attr('data');
                 const dest = d3.select(this).attr('data');
                 filterByCities(src, dest);

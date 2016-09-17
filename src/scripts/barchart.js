@@ -92,7 +92,10 @@ class Barchart {
         function brushend() {
             let l = brush.extent()[0];
             let r = brush.extent()[1];
-            console.log(l, r);
+            const filteredData = data.filter((d) => {
+                return xScale(d.time) >= l && xScale(d.time) <= r
+            });
+            console.log(filteredData);
         }
         svg.append("g")
             .attr('class', 'x brush')
@@ -126,10 +129,18 @@ class Barchart {
             .data(function(d) { return d.types; })
             .enter().append("rect")
             .attr('class', 'bar')
-            .attr("width", xScale1.rangeBand())
-            .attr("x", function(d) { return xScale1(d.type); })
-            .attr("y", function(d) { return yScale(d.count); })
+            .attr("width", xScale1.rangeBand() - 4)
+            .attr("x", function(d) { return xScale1(d.type) + 2; })
+            .attr("y", function(d) { return yScale(d.count) - 2; })
             .attr("height", function(d) { return height - yScale(d.count); })
+            .attr("stroke", 'white')
+            .attr("stroke-width", 2)
+            .on('mouseover', function() {
+                d3.select(this).attr("stroke", 'black');
+            })
+            .on('mouseleave', function() {
+                d3.select(this).attr("stroke", 'white');
+            })
             .style("fill", function(d) { return colors(d.type); }).append('title').text(function(d) {
                 return d.type + ' ' + d.count;
             });

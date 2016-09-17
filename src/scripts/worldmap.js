@@ -4,6 +4,8 @@
 import d3 from 'd3';
 
 import Trade from './trade';
+import City from './city';
+import { groupByCities } from './util';
 
 const GEOJSON_FILE_PATH = '../../static/data/china.geojson';
 const CONTAINER = '#map-container';
@@ -13,11 +15,13 @@ const COUNTRY_STROKE = '#ffffff';
 const SPOT_FILL = '';
 const SPOT_STROKE = '';
 
+let projection;
+
 class WorldMap {
-    constructor(trades) {
+    constructor(trades, listener) {
         this.trades = trades;
-        this.destroy = this.destroy.bind(this);
-        this.render = this.render.bind(this);
+        this.listener = listener;
+        this.drawPrimitives = this.drawPrimitives.bind(this);
         this.render();
     }
 
@@ -25,11 +29,31 @@ class WorldMap {
         $('#map-container svg').html('<g id="map-group"></g> <g id="primitive-group"></g>');
     }
 
+    drawPrimitives(trades, filterBySrc) {
+        d3.selectAll('#primitive-group *').remove();
+        const { cities, links } = groupByCities(trades);
+        try{
+            links.forEach((link, i) => {
+                new Trade(link, projection);
+            });
+        } catch(e) {
+
+        }
+        try{
+            cities.forEach((city, i) => {
+                new City(city, projection, filterBySrc);
+            });
+        } catch(e) {
+
+        }
+    }
+
     render() {
-        const trades = this.trades;
+        const { trades, drawPrimitives } = this;
+        const { filterBySrc } = this.listener;
         let { width, height } = d3.select('#map-container svg').node().getBoundingClientRect();
         const svg = d3.select('#map-group');
-        let projection = d3.geo.mercator()
+        projection = d3.geo.mercator()
             .center([107, 38])
             .scale(height)
             .translate([width / 2, height / 2]);
@@ -57,24 +81,8 @@ class WorldMap {
             });
         });
 
-        // 画点
-        let drawPoints = drawMap.then(() => {
-            return new Promise((res, rej) => {
-                try{
-                    let primitives = [];
-                    trades.sort((a, b) => a.t_when > b.t_when);
-                    trades.forEach((trade, i) => {
-                        const src_loc = [trade.src_longitude, trade.src_latitude];
-                        const dest_loc = [trade.dst_longitude, trade.dst_latitude];
-                        const src_coor = projection(src_loc);
-                        const des_coor = projection(dest_loc);
-                        primitives.push(new Trade(trade, src_coor, des_coor));
-                    });
-                    res();
-                } catch(e) {
-                    rej(e);
-                }
-            });
+        drawMap.then(() => {
+            drawPrimitives(trades, filterBySrc);
         }, () => {
 
         });

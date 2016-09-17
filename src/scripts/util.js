@@ -58,3 +58,46 @@ export function groupByTime(data) {
         types
     }
 }
+
+export function groupByCities(data) {
+    let routes = {};
+    let cities = {};
+    let results = {};
+    data.forEach((d) => {
+        const key = d.src_city + '_' + d.dst_city;
+        if(routes[key]) {
+            routes[key].count += d.count;
+        } else{
+            routes[key] = {
+                src: d.src_city,
+                dst: d.dst_city,
+                src_lng: d.src_longitude,
+                src_lat: d.src_latitude,
+                dst_lng: d.dst_longitude,
+                dst_lat: d.dst_latitude,
+                count: d.count,
+            }
+        }
+        if(!cities[key]) {
+            cities[key] = true;
+            const src = {
+                city: d.src_city,
+                lng: d.src_longitude,
+                lat: d.src_latitude,
+            };
+            results[src.city + src.lng + src.lat] = src;
+            const dst = {
+                city: d.dst_city,
+                lng: d.dst_longitude,
+                lat: d.dst_latitude,
+            };
+            results[dst.city + dst.lng + dst.lat] = dst;
+        }
+    });
+    const keys = Object.keys(routes);
+    const keys2 = Object.keys(results);
+    return {
+        cities: keys2.map((d) => results[d]),
+        links: keys.map((d) => routes[d]),
+    };
+}

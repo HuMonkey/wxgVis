@@ -17,6 +17,7 @@ class Pixelmap {
     }
 
     render() {
+        const that = this;
         const { matrix, cities } = matrixByCities(this.data);
         const { filterByCities } = this.listener;
         let max = 0;
@@ -28,8 +29,8 @@ class Pixelmap {
             })
         });
         const margin = {top: 0, right: 60, bottom: 0, left: 60},
-            width = cities.length * 18,
-            height = cities.length * 18;
+            width = cities.length * 17,
+            height = cities.length * 17;
         const x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
         const y = d3.scale.ordinal().rangeRoundBands([0, height], .1);
         const xAxis = d3.svg.axis()
@@ -84,20 +85,38 @@ class Pixelmap {
             .attr('stroke', 'white')
             .attr('stroke-width', '1px')
             .on('mouseover', function(d, i) {
+                if(window.selected) {
+                    return false;
+                }
                 d3.select('.x.axis .tick:nth-child(' + (i + 1) + ') text').attr('fill', 'red');
                 d3.select(this).attr('stroke', 'black');
+                const src = d3.select(this.parentNode).attr('data');
+                const dst = d3.select(this).attr('data');
+                d3.selectAll('.link').attr('opacity', 0.01);
+                d3.selectAll('.link[src_city="' + src + '"][dst_city="' + dst + '"]').attr('opacity', 0.9);
             })
             .on('mouseleave', function(d, i) {
+                if(window.selected) {
+                    return false;
+                }
+                d3.selectAll('.link').attr('opacity', 0.5);
                 d3.select('.x.axis .tick:nth-child(' + (i + 1) + ') text').attr('fill', 'black');
                 d3.select(this).attr('stroke', 'white');
             })
-            .on('click', function(d, i){
+            .on('click', function(){
+                d3.event.stopPropagation();
                 if(d3.select(this).classed('highlight')) {
                     d3.select(this).classed('highlight', false);
                     d3.selectAll('.barchart-container .group-highlight').remove();
                     d3.select('.barchart-container .x.brush').style('pointer-events', 'all');
+                    filterByCities(null, null);
+                    window.selected = false;
                     return false;
                 }
+                if(window.selected) {
+                    return false;
+                }
+                window.selected = true;
                 d3.selectAll('.relation').classed('highlight', false);
                 d3.select(this).classed('highlight', true);
                 d3.select('.barchart-container .x.brush').style('pointer-events', 'none');

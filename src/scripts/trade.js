@@ -5,9 +5,10 @@ import d3 from 'd3';
 import { distanceBetweenTwoPoints, groupByCities } from './util';
 
 class Trade {
-    constructor(link, projection) {
+    constructor(link, projection, colorScale) {
         this.link = link;
         this.projection = projection;
+        this.colorScale = colorScale;
         this.render = this.render.bind(this);
         this.render();
     }
@@ -104,7 +105,7 @@ class Trade {
     
     render() {
         const svg = d3.select('#primitive-group');
-        const { link, projection } = this;
+        const { link, projection, colorScale } = this;
         const { src_lng, src_lat, dst_lng, dst_lat, src, dst, count } = link;
         if(src_lng !== dst_lng || src_lat !== dst_lat) {
             const [sx, sy] = projection([src_lng, src_lat]);
@@ -119,7 +120,7 @@ class Trade {
                     return "M" + sx + "," + sy + "A" + dr + "," + dr + " 0 0, 1 " + ex + "," + ey;
                 })
                 .attr("fill", "none")
-                .attr("stroke", 'red')
+                .attr("stroke", colorScale(count))
                 //.style("pointer-events", "none")
                 //.attr("stroke-width", weight)
                 .attr("stroke-width", 3)
@@ -129,9 +130,8 @@ class Trade {
                 }).on("mouseleave", function(){
                     // TODO
                 });
-        } else{
+        } else {
             const [sx, sy] = projection([src_lng, src_lat]);
-            const [ex, ey] = projection([dst_lng, dst_lat]);
             this.path = svg.append("circle").attr("class", "link")
                 .attr('src', src_lng + '_' + src_lat)
                 .attr('dst', dst_lng + '_' + dst_lat)
@@ -141,7 +141,7 @@ class Trade {
                 .attr('cy', sy + 15)
                 .attr('r', 20)
                 .attr("fill", "none")
-                .attr("stroke", 'green')
+                .attr("stroke", colorScale(count))
                 .attr("stroke-width", 3)
                 .on("mouseover", function(){
                     // TODO

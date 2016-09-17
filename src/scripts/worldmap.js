@@ -33,8 +33,12 @@ class WorldMap {
         d3.selectAll('#primitive-group *').remove();
         const { cities, links } = groupByCities(trades);
         try{
+            const colors = ['#e5f5f9', '#99d8c9', '#2ca25f'];
+            const colorScale = d3.scale.linear()
+                .domain([0, 10, d3.max(links, (d) => +d.count)])
+                .range(colors);
             links.forEach((link, i) => {
-                new Trade(link, projection);
+                new Trade(link, projection, colorScale);
             });
         } catch(e) {
 

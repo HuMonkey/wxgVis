@@ -13,15 +13,25 @@ let data;
 let typeArray, timeArray;
 let worldMap, typePicker, barchart, pixelmap;
 let typesColor = {};
+let count_min = 0, count_max = 0;
 
 $('.barchart-container svg').on('click', (ev) => {
     ev.stopPropagation();
 });
 
-$('body').on('click', function(ev) {
-    console.log(ev.target);
+$('#count_min, #count_max').on('change', () => {
+    count_min = $('#count_min').val();
+    count_max = $('#count_max').val();
     let filteredData = data.filter((d) => {
-        return typeArray.indexOf(d.item_type) > -1;
+        return commonFilter(d);
+    });
+    render(filteredData);
+    window.selected = false;
+});
+
+$('body').on('click', function(ev) {
+    let filteredData = data.filter((d) => {
+        return commonFilter(d);
     });
     render(filteredData);
     window.selected = false;
@@ -48,23 +58,22 @@ function switchType(type) {
     } else {
         typeArray.push(type);
     }
-    let filteredData = data.filter((d) => {
-        return typeArray.indexOf(d.item_type) > -1;
-    });
+    let filteredData = data.filter((d) => commonFilter(d));
     render(filteredData);
+    window.selected = false;
+}
+
+function commonFilter(d) {
+    return typeArray.indexOf(d.item_type) > -1 && +d.count >= count_min && +d.count <= count_max;
 }
 
 function filterByCities(src, dest) {
     let filteredData;
     if(src && dest) {
-        filteredData = data.filter((d) => {
-            return typeArray.indexOf(d.item_type) > -1 && d.src_city === src && d.dst_city === dest;
-        });
+        filteredData = data.filter((d) => commonFilter(d) && d.src_city === src && d.dst_city === dest);
         highlight(filteredData);
     } else {
-        filteredData = data.filter((d) => {
-            return typeArray.indexOf(d.item_type) > -1;
-        });
+        filteredData = data.filter((d) => commonFilter(d));
         render(filteredData);
     }
 }
@@ -72,14 +81,10 @@ function filterByCities(src, dest) {
 function filterBySrc(src) {
     let filteredData;
     if(src) {
-        filteredData = data.filter((d) => {
-            return typeArray.indexOf(d.item_type) > -1 && d.src_city === src;
-        });
+        filteredData = data.filter((d) => commonFilter(d) && d.src_city === src);
         highlight(filteredData);
     } else {
-        filteredData = data.filter((d) => {
-            return typeArray.indexOf(d.item_type) > -1;
-        });
+        filteredData = data.filter((d) => commonFilter(d));
         render(filteredData);
     }
 }
@@ -87,13 +92,9 @@ function filterBySrc(src) {
 function filterByTimeAndType(time, type) {
     let filteredData;
     if(time && type) {
-        filteredData = data.filter((d) => {
-            return typeArray.indexOf(d.item_type) > -1 && d.t_when.split('-')[1] === time && d.item_type === type;
-        });
+        filteredData = data.filter((d) => commonFilter(d) && d.t_when.split('-')[1] === time && d.item_type === type);
     } else {
-        filteredData = data.filter((d) => {
-            return typeArray.indexOf(d.item_type) > -1;
-        });
+        filteredData = data.filter((d) => commonFilter(d));
     }
     worldMap && worldMap.destroy();
     pixelmap && pixelmap.destroy();
@@ -106,12 +107,10 @@ function filterByTimeRange(start, end) {
     if(start && end) {
         filteredData = data.filter((d) => {
             const time = d.t_when.split('-')[1];
-            return typeArray.indexOf(d.item_type) > -1 && time >= start && time <= end;
+            return commonFilter(d) && time >= start && time <= end;
         });
     } else{
-        filteredData = data.filter((d) => {
-            return typeArray.indexOf(d.item_type) > -1;
-        });
+        filteredData = data.filter((d) => commonFilter(d));
     }
     worldMap && worldMap.destroy();
     pixelmap && pixelmap.destroy();
@@ -123,6 +122,12 @@ d3.json('/static/data/data.txt', (array) => {
     data = array;
     typeArray = [], timeArray = [];
     data.forEach((d, i) => {
+        if(+d.count > count_max) {
+            count_max = +d.count;
+        }
+        if(+d.count < count_min) {
+            count_min = +d.count;
+        }
         if(typeArray.indexOf(d.item_type) === -1) {
             typeArray.push(d.item_type);
         }
@@ -139,5 +144,7 @@ d3.json('/static/data/data.txt', (array) => {
         typesColor[d] = colors(i);
     });
     typePicker = new TypePicker(typeArray, typesColor, { switchType });
+    $("#count_max").val(count_max);
+    $("#count_min").val(count_min);
     render(array);
 });
